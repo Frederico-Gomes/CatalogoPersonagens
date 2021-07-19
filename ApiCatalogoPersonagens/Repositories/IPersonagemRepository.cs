@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace ApiCatalogoPersonagens.Repositories
 {
-    public interface IPersonagemRepositorycs
+    public interface IPersonagemRepository : IDisposable
     {
         Task<List<Personagem>> ObterTodos(int pagina, int quantidade);
         Task<List<Personagem>> ObterPNome(int pagina, int quantidade, string nome);
         Task<List<Personagem>> ObterPFilme(int pagina, int quantidade, string filme);
         Task<Personagem> ObterPersonagem(Guid idPersonagem);
+        Task<Personagem> ObterPersonagem(string nome, string filme);
         Task<Personagem> InserirPersonagem(Personagem personagemInputModel);
-        Task AtualizarPersonagem(Guid idPersonagem, Personagem personagemInputModel);
+        Task AtualizarPersonagem(Personagem personagemInputModel);
     }
 }

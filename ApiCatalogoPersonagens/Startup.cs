@@ -1,3 +1,4 @@
+using ApiCatalogoPersonagens.Resources.AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +29,7 @@ namespace ApiCatalogoPersonagens
         {
 
             services.AddControllers();
+            services.AddAutoMapper(typeof(AutoMapperSetup));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiCatalogoPersonagens", Version = "v1" });

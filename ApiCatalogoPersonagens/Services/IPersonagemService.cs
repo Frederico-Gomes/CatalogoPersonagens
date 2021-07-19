@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ApiCatalogoPersonagens.Services
 {
-    public interface IPersonagemService
+    public interface IPersonagemService : IDisposable
     {
         Task<List<PersonagemViewModel>> ObterTodos(int pagina, int quantidade);
         Task<List<PersonagemViewModel>> ObterPNome(int pagina, int quantidade, string nome);

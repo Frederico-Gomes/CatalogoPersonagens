@@ -1,11 +1,108 @@
-﻿using System;
+﻿using ApiCatalogoPersonagens.Entities;
+using ApiCatalogoPersonagens.Exceptions;
+using ApiCatalogoPersonagens.InputModel;
+using ApiCatalogoPersonagens.Repositories;
+using ApiCatalogoPersonagens.ViewModel;
+using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ApiCatalogoPersonagens.Services
 {
-    public class PersonagemService
+    public class PersonagemService : IPersonagemService
     {
+        private readonly IPersonagemRepository _personagemRepository;
+        private readonly IMapper _mapper;
+
+        public PersonagemService(IPersonagemRepository personagemRepository, IMapper mapper)
+        {
+            _personagemRepository = personagemRepository;
+            _mapper = mapper;
+        }
+
+
+        public async Task AtualizarPersonagem(Guid idPersonagem, PersonagemInputModel personagemInputModel)
+        {
+            // Procura no banco um personagem com o id selecionado
+            var personagemEntity = await _personagemRepository.ObterPersonagem(idPersonagem);
+
+            // Se o personagem não existir lança excessão
+            if (personagemEntity == null) throw new PersonagemNaoCadastradoException();
+
+            // Atualiza os dados do personagem selecionado
+            personagemEntity = _mapper.Map<Personagem>(personagemInputModel);
+
+            // Atualiza os dados no banco de dados
+            await _personagemRepository.AtualizarPersonagem(personagemEntity);
+        }
+
+        public async Task<PersonagemViewModel> InserirPersonagem(PersonagemInputModel personagemInputModel)
+        {
+            // Verifica se o personagem ja existe no banco de dados
+            var personagemEntity = await _personagemRepository.ObterPersonagem(personagemInputModel.Nome, personagemInputModel.Filme);
+            
+            // Se o personagem existir é lancada uma exceção
+            if (personagemEntity != null)
+            {
+                throw new PersonagemJaCadastradoException();
+            }
+
+            // Mapeia os dados da entidade para um modelo de input
+            var personagemInsert = _mapper.Map<Personagem>(personagemInputModel);
+            personagemInsert.Id = Guid.NewGuid();
+            
+            // Faz a inserção dos dados no Banco
+            await _personagemRepository.InserirPersonagem(personagemInsert);
+            
+            // Retorna um modelo que o usuário pode ter acesso
+            return _mapper.Map<PersonagemViewModel>(personagemInsert);
+        }
+
+        public async Task<PersonagemViewModel> ObterPersonagem(Guid idPersonagem)
+        {
+            var personagem = await _personagemRepository.ObterPersonagem(idPersonagem);
+
+            if (personagem == null) return null;
+
+            else return _mapper.Map<PersonagemViewModel>(personagem);
+        }
+
+        public Task<List<PersonagemViewModel>> ObterPFilme(int pagina, int quantidade, string filme)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<PersonagemViewModel>> ObterPNome(int pagina, int quantidade, string nome)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<PersonagemViewModel>> ObterTodos(int pagina, int quantidade)
+        {
+
+            var personagens = await _personagemRepository.ObterTodos(pagina, quantidade);
+            return _mapper.Map<List<PersonagemViewModel>>(personagens);
+
+
+            // para cada personagem crie um objeto PersonagemViewModel e retorne uma lista contendo todos
+            //return personagens.Select(personagem => new PersonagemViewModel
+            //{
+            //    //Id = personagem.Id,
+            //    //Nome = personagem.Nome,
+            //    //Ator = personagem.Ator,
+            //    //Filme = personagem.Filme,
+            //    //Importancia = personagem.Importancia,
+            //    //Existencia = personagem.Existencia
+
+            //}).ToList();
+        }
+
+        //Fecha a conexão com o banco de dados
+        public void Dispose()
+        {
+            _personagemRepository?.Dispose();
+        }
     }
 }

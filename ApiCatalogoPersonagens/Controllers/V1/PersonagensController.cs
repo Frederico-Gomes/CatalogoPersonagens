@@ -1,4 +1,5 @@
-﻿using ApiCatalogoPersonagens.InputModel;
+﻿using ApiCatalogoPersonagens.Exceptions;
+using ApiCatalogoPersonagens.InputModel;
 using ApiCatalogoPersonagens.Services;
 using ApiCatalogoPersonagens.ViewModel;
 using Microsoft.AspNetCore.Http;
@@ -85,7 +86,7 @@ namespace ApiCatalogoPersonagens.Controllers.V1
                 var personagem = await _personagemService.InserirPersonagem(personagemInputModel);
                 return Ok(personagem);
             }
-            catch(Exception ex)
+            catch(PersonagemJaCadastradoException ex)
             {
                 return UnprocessableEntity("Ja existe um personagem com este nome para este filme");
             }
@@ -98,7 +99,7 @@ namespace ApiCatalogoPersonagens.Controllers.V1
                 await _personagemService.AtualizarPersonagem(idPersonagem, personagemInputModel);
                 return Ok();
             }
-            catch (Exception ex)
+            catch (PersonagemNaoCadastradoException ex)
             {
                 return NotFound("Personagem não existe");
             }
