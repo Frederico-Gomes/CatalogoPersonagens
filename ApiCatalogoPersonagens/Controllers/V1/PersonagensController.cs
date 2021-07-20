@@ -23,49 +23,36 @@ namespace ApiCatalogoPersonagens.Controllers.V1
             _personagemService = personagemService;
         }
 
-        private ActionResult VerificaPersonagens(IEnumerable<PersonagemViewModel> personagens)
-        {
-            if (personagens.Count() == 0)
-            {
-                return NoContent();
-            }
-            else
-            {
-                return Ok();
-            }
-        }
-
-        // Retorna uma lista de objetos contendo todos os personagems.
+        
+        
+        // Retorna uma lista de objetos contendo personagens no range da pagina .
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonagemViewModel>>> ObterTodos([FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade =5)
+        public async Task<ActionResult<IEnumerable<PersonagemViewModel>>> ObterTodos([FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade =3)
         {
+   
             var personagens= await _personagemService.ObterTodos(pagina, quantidade);
 
             if(personagens.Count == 0)
             {
                 return NoContent();
             }
-            return Ok();
-            // precisa de testes
-            //return VerificaPersonagens(personagens);
+            return Ok(personagens);
 
         }
-
-
         // Retorna uma lista de objetos com todos os personagems com determinado nome
-        [HttpGet("/personagem/{nomePersonagem:string}")]
-        public async Task<ActionResult<List<PersonagemViewModel>>> ObterPNome(string nomePersonagem)
+        [HttpGet("/personagem/{nomePersonagem}")]
+        public async Task<ActionResult<List<PersonagemViewModel>>> ObterPNome(string nomePersonagem, [FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade = 3)
         {
-            var result = await _personagemService.ObterPNome(1, 4, nomePersonagem);
-            return Ok();
+            var personagem = await _personagemService.ObterPNome(pagina, quantidade, nomePersonagem);
+            return Ok(personagem);
         }
 
         // Retorna uma lista de objetos com todos os personagem de determinado filme
-        [HttpGet("/filme/{nomeFIlme:string}")]
-        public async Task<ActionResult<List<PersonagemViewModel>>> ObterPFilme(string nomeFIlme)
+        [HttpGet("/filme/{nomeFIlme}")]
+        public async Task<ActionResult<List<PersonagemViewModel>>> ObterPFilme(string nomeFIlme, [FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade = 3)
         {
-            var result = await _personagemService.ObterPFilme(1, 4, nomeFIlme);
-            return Ok();
+            var personagem = await _personagemService.ObterPFilme(pagina, quantidade, nomeFIlme);
+            return Ok(personagem);
         }
 
         [HttpGet("/idPersonagem/{idPersonagem:guid}")]
@@ -75,7 +62,17 @@ namespace ApiCatalogoPersonagens.Controllers.V1
 
             if(personagem == null) return NoContent();
 
-            return Ok();
+            return Ok(personagem);
+        }
+
+        [HttpGet("/buscaP/{nome}/{filme}")]
+        public async Task<ActionResult<PersonagemViewModel>> ObterPersonagem([FromRoute] string nome, [FromRoute] string filme)
+        {
+            var personagem = await _personagemService.ObterPersonagem(nome, filme);
+
+            if (personagem == null) return NoContent();
+
+            return Ok(personagem);
         }
 
         [HttpPost]

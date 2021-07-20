@@ -69,34 +69,31 @@ namespace ApiCatalogoPersonagens.Services
             else return _mapper.Map<PersonagemViewModel>(personagem);
         }
 
-        public Task<List<PersonagemViewModel>> ObterPFilme(int pagina, int quantidade, string filme)
+        public async Task<PersonagemViewModel> ObterPersonagem(string nome, string filme)
         {
-            throw new NotImplementedException();
+            var personagem = await _personagemRepository.ObterPersonagem(nome,filme);
+
+            if (personagem == null) return null;
+
+            else return _mapper.Map<PersonagemViewModel>(personagem);
         }
 
-        public Task<List<PersonagemViewModel>> ObterPNome(int pagina, int quantidade, string nome)
+        public async Task<List<PersonagemViewModel>> ObterPFilme(int pagina, int quantidade, string filme)
         {
-            throw new NotImplementedException();
+            var personagens = await _personagemRepository.ObterPFilme(pagina, quantidade, filme);
+            return _mapper.Map<List<PersonagemViewModel>>(personagens);
+        }
+
+        public async Task<List<PersonagemViewModel>> ObterPNome(int pagina, int quantidade, string nome)
+        {
+            var personagens = await _personagemRepository.ObterPNome(pagina, quantidade, nome);
+            return _mapper.Map<List<PersonagemViewModel>>(personagens);
         }
 
         public async Task<List<PersonagemViewModel>> ObterTodos(int pagina, int quantidade)
         {
-
             var personagens = await _personagemRepository.ObterTodos(pagina, quantidade);
             return _mapper.Map<List<PersonagemViewModel>>(personagens);
-
-
-            // para cada personagem crie um objeto PersonagemViewModel e retorne uma lista contendo todos
-            //return personagens.Select(personagem => new PersonagemViewModel
-            //{
-            //    //Id = personagem.Id,
-            //    //Nome = personagem.Nome,
-            //    //Ator = personagem.Ator,
-            //    //Filme = personagem.Filme,
-            //    //Importancia = personagem.Importancia,
-            //    //Existencia = personagem.Existencia
-
-            //}).ToList();
         }
 
         //Fecha a conexão com o banco de dados
@@ -104,5 +101,7 @@ namespace ApiCatalogoPersonagens.Services
         {
             _personagemRepository?.Dispose();
         }
+
+        
     }
 }

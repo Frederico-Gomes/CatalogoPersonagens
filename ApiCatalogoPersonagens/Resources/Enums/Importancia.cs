@@ -8,5 +8,5 @@
         Oponente,
         Coadjuvante,
         Figurante
-    }
+    };
 }
