@@ -13,7 +13,8 @@ namespace ApiCatalogoPersonagens.Repositories
         Task<List<Personagem>> ObterPFilme(int pagina, int quantidade, string filme);
         Task<Personagem> ObterPersonagem(Guid idPersonagem);
         Task<Personagem> ObterPersonagem(string nome, string filme);
-        Task<Personagem> InserirPersonagem(Personagem personagemInputModel);
+        Task InserirPersonagem(Personagem personagemInputModel);
         Task AtualizarPersonagem(Personagem personagemInputModel);
+        Task RemoverPersonagem(Guid idPersonagem);
     }
 }

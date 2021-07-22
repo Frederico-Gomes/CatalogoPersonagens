@@ -16,5 +16,6 @@ namespace ApiCatalogoPersonagens.Services
         Task<PersonagemViewModel> ObterPersonagem(string nome, string filme);
         Task<PersonagemViewModel> InserirPersonagem(PersonagemInputModel personagemInputModel);
         Task AtualizarPersonagem(Guid idPersonagem, PersonagemInputModel personagemInputModel);
+        Task RemoverPersonagem(Guid idPersonagem);
     }
 }

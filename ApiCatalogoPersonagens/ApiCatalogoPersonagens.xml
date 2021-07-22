@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ApiCatalogoPersonagens</name>
+    </assembly>
+    <members>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.ObterTodos(System.Int32,System.Int32)">
+            <summary>
+            Busca todos os personagens de maneira paginada e ordenado por ID
+            </summary>
+            <param name="pagina"> Indica qual pagina está sendo consultada. Minimo 1</param>
+            <param name="quantidade">Indica quantidade de registros por pagina</param>
+            <response code = "200"> Retorna lista de personagens </response>
+            <response code = "204"> Nenhum  Personagem Cadastrado</response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.ObterPNome(System.String,System.Int32,System.Int32)">
+            <summary>
+            Busca personagens pelo nome
+            </summary>
+            <param name="nomePersonagem">Nome dos personagens na busca</param>
+            <param name="pagina"> Indica qual pagina está sendo consultada. Minimo 1</param>
+            <param name="quantidade">Indica quantidade de registros por pagina</param>
+            <response code = "200"> Retorna lista de personagens com respectivo nome</response>
+            <response code = "204"> Nenhum personagem com nome indicado </response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.ObterPFilme(System.String,System.Int32,System.Int32)">
+            <summary>
+            Busca todos os personagems de determinado filme
+            </summary>
+            <param name="nomeFilme"> Nome do filme </param>
+            <param name="pagina"> Indica qual pagina está sendo consultada. Minimo 1</param>
+            <param name="quantidade">Indica quantidade de registros por pagina</param>
+            <response code = "204"> Nenhum Personagem cadastrado no filme </response>
+            <response code = "200"> Retorna todos os personagens que aparecem no filme</response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.ObterPersonagem(System.Guid)">
+            <summary>
+            Busca um personagem pelo ID
+            </summary>
+            <param name="idPersonagem">ID do personagem </param>
+            <response code = "200"> Retorna o personagem solicitado </response>
+            <response code = "204"> Não existe personagem cadastrado com tal id </response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.ObterPersonagem(System.String,System.String)">
+            <summary>
+            Busca um Personagem de determinado filme
+            </summary>
+            <param name="nome">Nome do personagem para busca</param>
+            <param name="filme">Nome do filme para a busca</param>
+            <response code = "200"> Retorna o personagem solicitado </response>
+            <response code = "204"> Não existe personagem esse personagem no filme solicitado </response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.InserirPersonagem(ApiCatalogoPersonagens.InputModel.PersonagemInputModel)">
+            <summary>
+            Insere um personagem no banco de dados
+            </summary>
+            <param name="personagemInputModel"> Personagem a ser inserido</param>
+             <response code = "200"> Personagem criado com sucesso </response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.AtualizarPersonagem(System.Guid,ApiCatalogoPersonagens.InputModel.PersonagemInputModel)">
+            <summary>
+            Modifica os dados de determinado personagem
+            </summary>
+            <param name="idPersonagem">Id do personagem que sofrerá as alterações </param>
+            <param name="personagemInputModel">Dados novos que devem ser modificados no personagem </param>
+            <response code = "200">Personagem alterado com sucesso </response>
+        </member>
+        <member name="M:ApiCatalogoPersonagens.Controllers.V1.PersonagensController.RemoverPersonagem(System.Guid)">
+            <summary>
+            Remove um personagem do banco de dados
+            </summary>
+            <param name="idPersonagem">Id do personagem para remoção</param>
+            <response code = "200">Personagem removido com sucesso</response>
+        </member>
+    </members>
+</doc>

@@ -12,7 +12,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ApiCatalogoPersonagens
@@ -31,13 +33,17 @@ namespace ApiCatalogoPersonagens
         {
             
             services.AddScoped<IPersonagemService, PersonagemService>();
-            services.AddScoped<IPersonagemRepository, PersonagemRepository>();
+            services.AddScoped<IPersonagemRepository, PersonagemSQLRepository>();
 
             services.AddControllers();
             services.AddAutoMapper(typeof(AutoMapperSetup));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiCatalogoPersonagens", Version = "v1" });
+
+                var basePath = AppDomain.CurrentDomain.BaseDirectory;
+                var filename = typeof(Startup).GetTypeInfo().Assembly.GetName().Name + ".xml";
+                c.IncludeXmlComments(Path.Combine(basePath, filename));
             });
         }
 

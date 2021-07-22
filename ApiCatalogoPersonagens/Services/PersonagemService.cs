@@ -33,7 +33,7 @@ namespace ApiCatalogoPersonagens.Services
 
             // Atualiza os dados do personagem selecionado
             personagemEntity = _mapper.Map<Personagem>(personagemInputModel);
-
+            personagemEntity.Id = idPersonagem;
             // Atualiza os dados no banco de dados
             await _personagemRepository.AtualizarPersonagem(personagemEntity);
         }
@@ -41,13 +41,13 @@ namespace ApiCatalogoPersonagens.Services
         public async Task<PersonagemViewModel> InserirPersonagem(PersonagemInputModel personagemInputModel)
         {
             // Verifica se o personagem ja existe no banco de dados
-            var personagemEntity = await _personagemRepository.ObterPersonagem(personagemInputModel.Nome, personagemInputModel.Filme);
+          //  var personagemEntity = await _personagemRepository.ObterPersonagem(personagemInputModel.Nome, personagemInputModel.Filme);
             
             // Se o personagem existir é lancada uma exceção
-            if (personagemEntity != null)
-            {
-                throw new PersonagemJaCadastradoException();
-            }
+            //if (personagemEntity != null)
+           // {
+             //   throw new PersonagemJaCadastradoException();
+            //}
 
             // Mapeia os dados da entidade para um modelo de input
             var personagemInsert = _mapper.Map<Personagem>(personagemInputModel);
@@ -102,6 +102,9 @@ namespace ApiCatalogoPersonagens.Services
             _personagemRepository?.Dispose();
         }
 
-        
+        public async Task RemoverPersonagem(Guid idPersonagem)
+        {
+            await _personagemRepository.RemoverPersonagem(idPersonagem); 
+        }
     }
 }
