@@ -60,15 +60,19 @@ namespace ApiCatalogoPersonagens.Repositories
 
             var personagens = await BuscaP(comando);
 
+            if (personagens.Count == 0) return null;
+
             return personagens[0];
         }
 
         public async Task<Personagem> ObterPersonagem(string nome, string filme)
         {
             var comando = $"select * from Personagem where Nome = '{nome}' and Filme = '{filme}'";
-            
+
             var personagens = await BuscaP(comando);
-            
+
+            if (personagens.Count == 0) return null;
+
             return personagens[0];
         }
 
@@ -76,7 +80,7 @@ namespace ApiCatalogoPersonagens.Repositories
         {
 
             var comando = $"select * from Personagem where Filme = '{filme}' " +
-                $"order by id offset {((pagina - 1) * quantidade)} rows fetch next {quantidade} rows only";
+                $"order by Id offset {((pagina - 1) * quantidade)} rows fetch next {quantidade} rows only";
             
             var personagens = await BuscaP(comando);
             
@@ -88,6 +92,11 @@ namespace ApiCatalogoPersonagens.Repositories
             var comando = $"select * from Personagem where Nome = '{nome}' order by id offset {((pagina - 1) * quantidade)} rows fetch next {quantidade} rows only";
 
             var personagens = await BuscaP(comando);
+
+     if (personagens.Count == 0)
+            {
+                return null;
+            } 
 
             return personagens;
         }

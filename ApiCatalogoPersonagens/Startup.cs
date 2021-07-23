@@ -1,3 +1,4 @@
+using ApiCatalogoPersonagens.Middlewares;
 using ApiCatalogoPersonagens.Repositories;
 using ApiCatalogoPersonagens.Resources.AutoMapper;
 using ApiCatalogoPersonagens.Services;
@@ -58,6 +59,7 @@ namespace ApiCatalogoPersonagens
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseRouting();
 

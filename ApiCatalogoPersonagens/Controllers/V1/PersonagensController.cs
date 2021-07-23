@@ -30,18 +30,20 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// <param name="pagina"> Indica qual pagina está sendo consultada. Minimo 1</param>
         /// <param name="quantidade">Indica quantidade de registros por pagina</param>
         /// <response code = "200"> Retorna lista de personagens </response>
-        /// <response code = "204"> Nenhum  Personagem Cadastrado</response>
+        /// <response code = "404"> Nenhum  Personagem Cadastrado</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PersonagemViewModel>>> ObterTodos([FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade =3)
         {
-   
-            var personagens= await _personagemService.ObterTodos(pagina, quantidade);
-
-            if(personagens.Count == 0)
+            try
             {
-                return NoContent();
+                var personagens= await _personagemService.ObterTodos(pagina, quantidade);
+                return Ok(personagens);
+
             }
-            return Ok(personagens);
+            catch(NenhumPersonagemCadastradoException)
+            {
+                return NotFound("Nenhum personagem cadastrado");
+            }
 
         }
 
@@ -52,12 +54,21 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// <param name="pagina"> Indica qual pagina está sendo consultada. Minimo 1</param>
         /// <param name="quantidade">Indica quantidade de registros por pagina</param>
         /// <response code = "200"> Retorna lista de personagens com respectivo nome</response>
-        /// <response code = "204"> Nenhum personagem com nome indicado </response>
+        /// <response code = "404"> Nenhum personagem com nome cadastrado </response>
         [HttpGet("/personagem/{nomePersonagem}")]
         public async Task<ActionResult<List<PersonagemViewModel>>> ObterPNome(string nomePersonagem, [FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade = 3)
         {
-            var personagem = await _personagemService.ObterPNome(pagina, quantidade, nomePersonagem);
-            return Ok(personagem);
+            try
+            {
+            var personagens = await _personagemService.ObterPNome(pagina, quantidade, nomePersonagem); 
+            return Ok(personagens);
+
+            }
+            catch (PersonagemNaoCadastradoException)
+            {
+
+                return NotFound("Nenhum personagem com o nome cadastrado");
+            }
         }
 
         /// <summary>
@@ -66,13 +77,22 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// <param name="nomeFilme"> Nome do filme </param>
         /// <param name="pagina"> Indica qual pagina está sendo consultada. Minimo 1</param>
         /// <param name="quantidade">Indica quantidade de registros por pagina</param>
-        /// <response code = "204"> Nenhum Personagem cadastrado no filme </response>
+        /// <response code = "404"> Nenhum Personagem cadastrado no filme </response>
         /// <response code = "200"> Retorna todos os personagens que aparecem no filme</response>
-        [HttpGet("/filme/{nomeFIlme}")]
+        [HttpGet("/filme/{nomeFilme}")]
         public async Task<ActionResult<List<PersonagemViewModel>>> ObterPFilme(string nomeFilme, [FromQuery, Range(1, int.MaxValue)] int pagina = 1, [FromQuery, Range(1, 50)] int quantidade = 3)
         {
-            var personagem = await _personagemService.ObterPFilme(pagina, quantidade, nomeFilme);
-            return Ok(personagem);
+            try
+            {
+                var personagens = await _personagemService.ObterPFilme(pagina, quantidade, nomeFilme);
+                return Ok(personagens);
+
+            }
+            catch (PersonagemNaoCadastradoException)
+            {
+
+                return NotFound("Nenhum personagem Cadastrado no filme");
+            }
         }
 
         /// <summary>
@@ -80,15 +100,24 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// </summary>
         /// <param name="idPersonagem">ID do personagem </param>
         /// <response code = "200"> Retorna o personagem solicitado </response>
-        /// <response code = "204"> Não existe personagem cadastrado com tal id </response>
+        /// <response code = "404"> Não existe personagem cadastrado com tal id </response>
         [HttpGet("/idPersonagem/{idPersonagem:guid}")]
         public async Task<ActionResult<PersonagemViewModel>> ObterPersonagem([FromRoute] Guid idPersonagem)
         {
-            var personagem = await _personagemService.ObterPersonagem(idPersonagem);
+            try
+            {
+                var personagem = await _personagemService.ObterPersonagem(idPersonagem);
+                return Ok(personagem);
 
-            if(personagem == null) return NoContent();
+            }
+            catch (PersonagemNaoCadastradoException)
+            {
 
-            return Ok(personagem);
+                return NotFound("Personagem não cadastrado");
+            }
+
+
+
         }
 
         /// <summary>
@@ -97,22 +126,32 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// <param name="nome">Nome do personagem para busca</param>
         /// <param name="filme">Nome do filme para a busca</param>
         /// <response code = "200"> Retorna o personagem solicitado </response>
-        /// <response code = "204"> Não existe personagem esse personagem no filme solicitado </response>
+        /// <response code = "404"> Não existe personagem esse personagem no filme solicitado </response>
         [HttpGet("/buscaP/{nome}/{filme}")]
         public async Task<ActionResult<PersonagemViewModel>> ObterPersonagem([FromRoute] string nome, [FromRoute] string filme)
         {
-            var personagem = await _personagemService.ObterPersonagem(nome, filme);
+            try
+            {
+                var personagem = await _personagemService.ObterPersonagem(nome,filme);
+                return Ok(personagem);
 
-            if (personagem == null) return NoContent();
+            }
+            catch (PersonagemNaoCadastradoException)
+            {
 
-            return Ok(personagem);
+                return NotFound("Personagem não cadastrado");
+            }
         }
 
         /// <summary>
         /// Insere um personagem no banco de dados
         /// </summary>
+        /// <remarks>
+        ///     Não podem existir personagens em um filme com o mesmo nome
+        /// </remarks>
         /// <param name="personagemInputModel"> Personagem a ser inserido</param>
         ///  <response code = "200"> Personagem criado com sucesso </response>
+        ///  <response code = "409"> Personagem com mesmo nome ja existe no filme </response>
         [HttpPost]
         public async Task<ActionResult<PersonagemViewModel>> InserirPersonagem([FromBody]PersonagemInputModel personagemInputModel)
         {
@@ -123,7 +162,7 @@ namespace ApiCatalogoPersonagens.Controllers.V1
             }
             catch (PersonagemJaCadastradoException)
             {
-                return UnprocessableEntity("Ja existe um personagem com este nome para este filme");
+                return Conflict("Ja existe um personagem com este nome neste filme este filme");
             }
         }
 
@@ -133,6 +172,7 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// <param name="idPersonagem">Id do personagem que sofrerá as alterações </param>
         /// <param name="personagemInputModel">Dados novos que devem ser modificados no personagem </param>
         /// <response code = "200">Personagem alterado com sucesso </response>
+        /// <response code = "404">Personagem não existe </response>
         [HttpPut("{idPersonagem:guid}")]
         public async Task<ActionResult> AtualizarPersonagem([FromRoute]Guid idPersonagem,[FromBody] PersonagemInputModel personagemInputModel)
         {
@@ -152,11 +192,19 @@ namespace ApiCatalogoPersonagens.Controllers.V1
         /// </summary>
         /// <param name="idPersonagem">Id do personagem para remoção</param>
         /// <response code = "200">Personagem removido com sucesso</response>
+        /// <response code = "404">Personagem Não existe</response>
         [HttpDelete("{idPersonagem:guid}")]
         public async Task<ActionResult> RemoverPersonagem(Guid idPersonagem)
         {
-            await _personagemService.RemoverPersonagem(idPersonagem);
-            return Ok();
+            try
+            {
+                await _personagemService.RemoverPersonagem(idPersonagem);
+                return Ok();
+            }
+            catch (PersonagemNaoCadastradoException)
+            {
+                return NotFound("Não foi possivel encontrar o personagem");
+            }
         }
 
     }
